@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediCare Pro — Premium Doctor Appointment Booking</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- ─── LOADING SCREEN ─── -->
+<div id="loading-screen">
+  <div class="logo-anim">Medi<span style="color:var(--gold-light)">Care</span></div>
+  <div class="tagline">Your Health, Our Priority</div>
+  <div class="bar"><div class="bar-fill"></div></div>
+</div>
+
+<!-- ─── AUTH SCREEN ─── -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-left">
+    <div class="auth-brand">Medi<span>Care</span> <span style="color:rgba(255,255,255,.3);font-size:28px;">Pro</span></div>
+    <div class="auth-tagline">Premium Healthcare, Simplified</div>
+    <div class="auth-features">
+      <div class="auth-feature">
+        <div class="f-icon">🩺</div>
+        <div class="f-text">
+          <div class="title">Top Specialists</div>
+          <div class="sub">Access 200+ verified doctors across all specialties</div>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="f-icon">📅</div>
+        <div class="f-text">
+          <div class="title">Instant Booking</div>
+          <div class="sub">Book appointments in under 2 minutes, 24/7</div>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="f-icon">🔒</div>
+        <div class="f-text">
+          <div class="title">Secure Records</div>
+          <div class="sub">Your medical history, encrypted and accessible</div>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="f-icon">💊</div>
+        <div class="f-text">
+          <div class="title">Digital Prescriptions</div>
+          <div class="sub">Get prescriptions digitally, request refills online</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form-title">Welcome Back</div>
+    <div class="auth-form-sub">Sign in to your healthcare dashboard</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login',this)">Sign In</div>
+      <div class="auth-tab" onclick="switchAuthTab('register',this)">Register</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form">
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" placeholder="demo@medicare.com" id="auth-email" value="demo@medicare.com">
+      </div>
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" placeholder="password123" id="auth-pass" value="password123">
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);cursor:pointer">
+          <input type="checkbox" checked> Remember me
+        </label>
+        <a href="#" style="font-size:13px;color:var(--navy);font-weight:600;text-decoration:none">Forgot password?</a>
+      </div>
+      <button id="login-btn" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:14px" onclick="doLogin()">
+        Sign In to Dashboard →
+      </button>
+      <div style="margin-top:12px;text-align:center;font-size:12px;color:var(--text-muted)">
+        Demo: <strong>demo@medicare.com</strong> / <strong>password123</strong>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" class="hidden">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" placeholder="John" id="reg-fname">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" placeholder="Doe" id="reg-lname">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="john@example.com" id="reg-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" placeholder="Min 6 chars" id="reg-pass">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" placeholder="+91 9999999999" id="reg-phone">
+        </div>
+      </div>
+      <button id="register-btn" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;margin-top:16px" onclick="doRegister()">
+        Create Account →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MAIN APP ─── -->
+<div id="app" style="display:none">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">Medi<span>Care</span></div>
+      <div class="subtitle">Healthcare Dashboard</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">?</div>
+      <div class="info">
+        <div class="name" id="sidebar-name">Loading…</div>
+        <div class="role">Patient</div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <div class="nav-item active" onclick="navigate('dashboard',this)">
+          <div class="icon">🏠</div> Dashboard
+        </div>
+        <div class="nav-item" onclick="navigate('book',this);initBookingPage()">
+          <div class="icon">📅</div> Book Appointment
+        </div>
+        <div class="nav-item" onclick="navigate('appointments',this)">
+          <div class="icon">📋</div> My Appointments
+          <span class="notif" id="appt-notif">0</span>
+        </div>
+        <div class="nav-item" onclick="navigate('doctors',this)">
+          <div class="icon">👨‍⚕️</div> Find Doctors
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Health</div>
+        <div class="nav-item" onclick="navigate('records',this)">
+          <div class="icon">🗂️</div> Medical Records
+        </div>
+        <div class="nav-item" onclick="navigate('prescriptions',this)">
+          <div class="icon">💊</div> Prescriptions
+        </div>
+        <div class="nav-item" onclick="navigate('vitals',this)">
+          <div class="icon">❤️</div> Health Vitals
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Account</div>
+        <div class="nav-item" onclick="navigate('profile',this)">
+          <div class="icon">👤</div> My Profile
+        </div>
+        <div class="nav-item" onclick="navigate('settings',this)">
+          <div class="icon">⚙️</div> Settings
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="logout-btn" onclick="doLogout()">🚪 Sign Out</div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="Search doctors, specialties…" oninput="handleSearch(this.value)">
+        </div>
+        <div class="notif-btn" onclick="toggleNotif()">
+          🔔
+          <div class="dot" id="notif-dot" style="display:none"></div>
+        </div>
+        <div class="top-avatar" id="top-avatar" onclick="navigate('profile',null)">?</div>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="welcome-banner">
+        <h2>Good <span id="greeting-time">Morning</span>, <span id="greeting-name">there</span> 👋</h2>
+        <p>Here's your health overview. Stay on top of your appointments and wellness goals.</p>
+        <div class="quick-btns">
+          <button class="btn btn-primary" onclick="navigate('book',null);initBookingPage()">📅 Book Appointment</button>
+          <button class="btn btn-white" onclick="navigate('records',null)">📁 View Records</button>
+          <button class="btn btn-white" onclick="navigate('doctors',null)">🔍 Find Doctors</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="icon" style="background:#EBF0FA">📅</div>
+          <div class="value" id="stat-total">—</div>
+          <div class="label">Total Appointments</div>
+          <div class="change up">Lifetime bookings</div>
+          <div class="bg-icon">📅</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon" style="background:#E6F7EE">✅</div>
+          <div class="value" id="stat-completed">—</div>
+          <div class="label">Completed Visits</div>
+          <div class="change up">Health maintained</div>
+          <div class="bg-icon">✅</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon" style="background:#FEF5E7">⏳</div>
+          <div class="value" id="stat-upcoming">—</div>
+          <div class="label">Upcoming</div>
+          <div class="change">Next: <span id="stat-next">—</span></div>
+          <div class="bg-icon">⏳</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon" style="background:#FDECEA">💊</div>
+          <div class="value">3</div>
+          <div class="label">Active Prescriptions</div>
+          <div class="change">Renew 1 soon</div>
+          <div class="bg-icon">💊</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Upcoming Appointments</div>
+              <div class="card-subtitle">Your next scheduled visits</div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="navigate('appointments',null)">View All</button>
+          </div>
+          <div id="dash-upcoming-list"><div class="loading-spinner"><div class="spin"></div> Loading…</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Health Tips</div></div>
+          <div class="tips-scroll" id="tips-scroll"></div>
+        </div>
+      </div>
+      <div style="margin-top:24px" class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Featured Doctors</div>
+            <div class="card-subtitle">Top-rated specialists available today</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="navigate('doctors',null)">See All</button>
+        </div>
+        <div class="doctors-grid" id="featured-doctors"><div class="loading-spinner"><div class="spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ── BOOK APPOINTMENT ── -->
+    <div class="page" id="page-book">
+      <div class="booking-steps">
+        <div class="step-btn active" id="step-btn-1"><span class="step-num">Step 1</span>Choose Doctor</div>
+        <div class="step-btn" id="step-btn-2"><span class="step-num">Step 2</span>Pick Date & Time</div>
+        <div class="step-btn" id="step-btn-3"><span class="step-num">Step 3</span>Your Details</div>
+        <div class="step-btn" id="step-btn-4"><span class="step-num">Step 4</span>Confirm</div>
+      </div>
+
+      <!-- Step 1: Choose Doctor -->
+      <div class="booking-step active" id="booking-step-1">
+        <div style="margin-bottom:16px">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy)">Select a Doctor</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:4px">Choose a specialist from our verified network</p>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+          <select class="filter-select" id="spec-filter" onchange="Booking.filterBySpec()">
+            <option value="">All Specialties</option>
+            <option>Cardiologist</option><option>Dermatologist</option>
+            <option>Neurologist</option><option>Orthopedic</option>
+            <option>Pediatrician</option><option>Gynecologist</option>
+            <option>Psychiatrist</option><option>General Physician</option>
+          </select>
+        </div>
+        <div class="doc-select-grid" id="doc-select-list"><div class="loading-spinner"><div class="spin"></div></div></div>
+        <div style="margin-top:24px;text-align:right">
+          <button class="btn btn-primary" onclick="Booking.goToStep(2)" id="step1-next" disabled>
+            Next: Pick Date & Time →
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Date & Time -->
+      <div class="booking-step" id="booking-step-2">
+        <div style="margin-bottom:20px">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy)">Select Date & Time</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:4px">Choose your preferred appointment slot</p>
+        </div>
+        <div class="calendar-wrapper">
+          <div class="calendar">
+            <div class="cal-header">
+              <button class="cal-nav" onclick="Booking.changeMonth(-1)">‹</button>
+              <div class="cal-month" id="cal-month-label"></div>
+              <button class="cal-nav" onclick="Booking.changeMonth(1)">›</button>
+            </div>
+            <div class="cal-grid" id="cal-grid"></div>
+          </div>
+          <div class="time-slots">
+            <h4 id="time-slots-date">Select a date</h4>
+            <div class="sub">Available slots for selected doctor</div>
+            <div id="time-slots-container">
+              <p style="color:var(--text-muted);font-size:13px;padding:20px 0">Please select a date to see available time slots.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:24px;display:flex;justify-content:space-between">
+          <button class="btn btn-outline" onclick="Booking.goToStep(1)">← Back</button>
+          <button class="btn btn-primary" onclick="Booking.goToStep(3)" id="step2-next" disabled>Next: Your Details →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Patient Details -->
+      <div class="booking-step" id="booking-step-3">
+        <div style="margin-bottom:20px">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy)">Patient Information</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:4px">Fill in the details for the appointment</p>
+        </div>
+        <div class="card">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="p-name" placeholder="Full name"></div>
+            <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date" id="p-dob"></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="p-phone" placeholder="+91 9999999999"></div>
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select class="form-input" id="p-gender">
+                <option value="">Select gender</option>
+                <option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              <select class="form-input" id="p-blood">
+                <option value="">Select</option>
+                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Visit Type</label>
+              <select class="form-input" id="p-type">
+                <option>In-Person</option>
+                <option>Video Consultation</option>
+              </select>
+            </div>
+            <div class="form-group full"><label class="form-label">Reason for Visit</label><textarea class="form-input" id="p-reason" placeholder="Describe your symptoms or reason…"></textarea></div>
+            <div class="form-group full"><label class="form-label">Existing Medical Conditions (optional)</label><input class="form-input" id="p-conditions" placeholder="e.g. Diabetes, Hypertension…"></div>
+            <div class="form-group full"><label class="form-label">Current Medications (optional)</label><input class="form-input" id="p-meds" placeholder="e.g. Metformin 500mg…"></div>
+          </div>
+        </div>
+        <div style="margin-top:24px;display:flex;justify-content:space-between">
+          <button class="btn btn-outline" onclick="Booking.goToStep(2)">← Back</button>
+          <button class="btn btn-primary" onclick="Booking.goToStep(4)">Next: Review →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Confirm -->
+      <div class="booking-step" id="booking-step-4">
+        <div style="margin-bottom:20px">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy)">Confirm Appointment</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:4px">Review your details before confirming</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:18px">Appointment Summary</div>
+            <div id="confirm-summary"></div>
+          </div>
+          <div>
+            <div class="booking-summary" id="confirm-fee-box"></div>
+            <button id="confirm-btn" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;margin-top:16px;font-size:14px" onclick="Booking.confirm()">
+              ✅ Confirm & Book Appointment
+            </button>
+            <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:8px" onclick="Booking.goToStep(3)">← Edit Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MY APPOINTMENTS ── -->
+    <div class="page" id="page-appointments">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy)">My Appointments</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Track and manage all your appointments</p>
+        </div>
+        <button class="btn btn-primary" onclick="navigate('book',null);initBookingPage()">+ Book New</button>
+      </div>
+      <div class="appt-tabs">
+        <div class="appt-tab active" data-filter="upcoming" onclick="AppointmentsPage.load('upcoming');$$('.appt-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Upcoming</div>
+        <div class="appt-tab" data-filter="completed" onclick="AppointmentsPage.load('completed');$$('.appt-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Completed</div>
+        <div class="appt-tab" data-filter="cancelled" onclick="AppointmentsPage.load('cancelled');$$('.appt-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Cancelled</div>
+        <div class="appt-tab" data-filter="all" onclick="AppointmentsPage.load('all');$$('.appt-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">All</div>
+      </div>
+      <div id="appt-list"><div class="loading-spinner"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- ── FIND DOCTORS ── -->
+    <div class="page" id="page-doctors">
+      <div style="margin-bottom:24px">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy)">Find a Doctor</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Browse our network of certified specialists</p>
+      </div>
+      <div class="doctors-search">
+        <div class="search-box search-main">
+          <span>🔍</span>
+          <input type="text" placeholder="Search by name or specialty…" oninput="DoctorsPage.search(this.value)" id="doc-search-input">
+        </div>
+        <select class="filter-select" onchange="DoctorsPage.filterBySpec(this.value)">
+          <option value="">All Specialties</option>
+          <option>Cardiologist</option><option>Dermatologist</option>
+          <option>Neurologist</option><option>Orthopedic</option>
+          <option>Pediatrician</option><option>Gynecologist</option>
+          <option>Psychiatrist</option><option>General Physician</option>
+        </select>
+        <select class="filter-select" onchange="DoctorsPage.filterByAvail(this.value)">
+          <option value="">All Availability</option>
+          <option value="available">Available Today</option>
+        </select>
+      </div>
+      <div class="doctors-grid" id="doctors-grid"><div class="loading-spinner"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- ── MEDICAL RECORDS ── -->
+    <div class="page" id="page-records">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy)">Medical Records</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Your complete health history</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('record-modal');document.getElementById('rec-date').value=new Date().toISOString().split('T')[0]">+ Add Record</button>
+      </div>
+      <div id="records-list"><div class="loading-spinner"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- ── PRESCRIPTIONS ── -->
+    <div class="page" id="page-prescriptions">
+      <div style="margin-bottom:24px">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy)">Prescriptions</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Active and past prescriptions</p>
+      </div>
+      <div id="prescriptions-list"><div class="loading-spinner"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- ── HEALTH VITALS ── -->
+    <div class="page" id="page-vitals">
+      <div style="margin-bottom:24px">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy)">Health Vitals</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Track your key health metrics</p>
+      </div>
+      <div id="vitals-content"><div class="loading-spinner"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- ── MY PROFILE ── -->
+    <div class="page" id="page-profile">
+      <div class="profile-header">
+        <div class="profile-avatar-lg" id="profile-avatar-lg">?</div>
+        <div class="profile-info">
+          <div class="name" id="profile-full-name">—</div>
+          <div class="email" id="profile-email-tag">—</div>
+          <div class="tags">
+            <span class="badge badge-blue">Patient ID: MC-2025-001</span>
+            <span class="badge badge-green">Verified ✓</span>
+            <span class="badge badge-gold">Premium Member</span>
+          </div>
+        </div>
+        <button class="btn btn-outline" style="margin-left:auto" onclick="ProfilePage.showEditModal()">✏️ Edit Profile</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">Personal Information</div>
+          <div id="profile-details"><div class="loading-spinner"><div class="spin"></div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">Account Settings</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Email Notifications</span><div class="toggle-sw on" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">SMS Reminders</span><div class="toggle-sw on" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Push Notifications</span><div class="toggle-sw" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">Two-Factor Auth</span><div class="toggle-sw" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="page" id="page-settings">
+      <div style="margin-bottom:24px">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy)">Settings</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Manage your preferences</p>
+      </div>
+      <div id="settings-content"></div>
+    </div>
+  </div><!-- /.main -->
+</div><!-- /#app -->
+
+<!-- ─── NOTIFICATIONS PANEL ─── -->
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-header">
+    <div class="title">Notifications</div>
+    <div class="notif-close" onclick="toggleNotif()">✕</div>
+  </div>
+  <div id="notif-list"><div class="loading-spinner"><div class="spin"></div></div></div>
+</div>
+
+<!-- ─── DOCTOR MODAL ─── -->
+<div class="modal-overlay" id="doctor-modal">
+  <div class="modal">
+    <div class="modal-header" id="modal-header">
+      <button class="modal-close" onclick="closeModal('doctor-modal')">✕</button>
+      <div id="modal-doc-info"></div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ─── RATE MODAL ─── -->
+<div class="modal-overlay" id="rate-modal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal('rate-modal')">✕</button>
+      <div style="color:white">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600">Rate Your Visit</div>
+        <div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:4px" id="rate-doc-name"></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-muted)">How was your experience with the doctor?</p>
+      <div class="stars-input" id="stars-input">
+        <span class="star" data-v="1" onclick="RatingModal.setRating(1)">★</span>
+        <span class="star" data-v="2" onclick="RatingModal.setRating(2)">★</span>
+        <span class="star" data-v="3" onclick="RatingModal.setRating(3)">★</span>
+        <span class="star" data-v="4" onclick="RatingModal.setRating(4)">★</span>
+        <span class="star" data-v="5" onclick="RatingModal.setRating(5)">★</span>
+      </div>
+      <textarea class="form-input" id="rate-comment" placeholder="Share your experience (optional)…" style="margin-bottom:16px"></textarea>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="RatingModal.submit()">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ADD RECORD MODAL ─── -->
+<div class="modal-overlay" id="record-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal('record-modal')">✕</button>
+      <div style="color:white;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600">Add Medical Record</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Record Type</label>
+        <select class="form-input" id="rec-type">
+          <option>Lab Report</option><option>Prescription</option>
+          <option>X-Ray / Scan</option><option>Doctor's Note</option>
+          <option>Vaccination</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Title</label>
+        <input class="form-input" id="rec-title" placeholder="e.g. Blood Test — March 2026">
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="rec-date">
+      </div>
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="rec-notes" placeholder="Add any observations or notes…"></textarea>
+      </div>
+      <button id="add-record-btn" class="btn btn-primary" style="width:100%;justify-content:center" onclick="RecordsPage.add()">Add Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── EDIT PROFILE MODAL ─── -->
+<div class="modal-overlay" id="edit-profile-modal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal('edit-profile-modal')">✕</button>
+      <div style="color:white;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600">Edit Profile</div>
+    </div>
+    <div class="modal-body">
+      <div id="edit-profile-form"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST CONTAINER ─── -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ─── SCRIPTS ─── -->
+<script src="/js/api.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/booking.js"></script>
+<script src="/js/doctors.js"></script>
+<script src="/js/pages.js"></script>
+<script>
+  // ── APP BOOTSTRAP ──────────────────────────────────────────────
+  window.addEventListener('load', async () => {
+    // Show loading for 2s
+    setTimeout(async () => {
+      const ls = document.getElementById('loading-screen');
+      ls.style.opacity = '0';
+      setTimeout(() => ls.style.display = 'none', 600);
+
+      const loggedIn = await Auth.init();
+      if (loggedIn) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        App.init();
+      } else {
+        document.getElementById('auth-screen').style.display = 'flex';
+      }
+    }, 2200);
+  });
+</script>
+</body>
+</html>
